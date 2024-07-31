@@ -17,6 +17,9 @@
   - 也可以使用git commit \[file1] \[file2] -m [m]提交暂存区的指定文件到仓库区
   - git commit -a参数设置修改文件后不需要使用git add添加暂存区，直接提交
   - git commit --amend可以修改当前提交记录表示的操作/说明；其实就是创建了一个新的提交覆盖了旧的提交，因此提交记录对应的Hash值也会改变
+  - git commit -am ‘message’ -am等同于-a -m
+    -a参数可以将所有已跟踪文件中的执行修改或删除操作的文件都提交到本地仓库，即使它们没有经过git add添加到暂存区，
+    **注意:** 新加的文件（即没有被git系统管理的文件）是不能被提交到本地仓库的。
 
 - 创建分支A：git branch A；
 
@@ -56,6 +59,8 @@
 - git status：查看仓库状态 可以查询当前仓库是否有改动
 
 - git log 查看本地仓库中所有的提交记录；**git show commitId**查看指定commit hashID的所有修改：**git show commitId fileName**查看指定commit中某个文件的修改
+
+- git branch -vv可以查看详细的分支信息，上游分支会被显示在分支名称胖的放括号中。
 
 # git理解
 
@@ -337,8 +342,9 @@
      用git push origin \<分支名\> --force即可！
 
 - **==git进行push或pull时看的是commit的hash值，通过此来判断版本新旧==**，再进行pull时，远端版本需要新于本地版本；push时本地版本需要新于远端版本。==否则，如果本地分支追踪远程，则直接合并；如果没有追踪，会报non-fast-forward==。
-  - git push --set-upstream origin dev_bim	//PUSH并设置上游
-
+  
+- git push --set-upstream origin dev_bim	//PUSH并设置上游
+  
 - git merge后对主分支进行git log会有所有合并分支的提交记录，其排序按**==提交时间==**进行排序。==如果合并分支没有被删除，对应的提交记录上会括号表明分支，如果已删除，则对应的提交记录上没有括号表明分支，但也会有，并也是括号表明==
 
 - 在B分支上，git rebase A，表示将B分支的基变换到A上。变基后，B分支上与A存在冲突的修改会被要求解决冲突，而后给与新的message。而被作为基底的目标分支A不会变化，只是为了保证B的线性提交
