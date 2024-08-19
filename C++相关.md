@@ -2469,7 +2469,7 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
      };
      ~~~
 
-     
+- 【C++的tryCatch无法捕获空指针/野指针异常】空指针实际上指向的是虚拟内存地址为 0 的位置，它是一个特殊的位置，操作系统内核是不会为应用程序在这个 0 地址上分配物理内存页的。因此当应用进程访问这个位置时，内核不会像访问常规内存那样：发现该处地址没有分配物理页面，会产生一个缺页异常，然后异常处理程序为它分配一个物理页，并建立页表项，而是直接向进程抛出一个内存段错误的信号：SIGSEGV。我们知道，这个信号的缺省处理是终止进程并生成 coredump 文件，因此，当程序访问空指针时，内核会直接终止进程，也就是应用程序根本不会有抛出异常的机会，实际上应用程序压根就不知道它访问了空指针，因为它自己判断不了，抛异常也就无从谈起，所以尽管上述 C++ 程序使用了 catch 语句块，也没有异常可捕捉。同样，如果程序访问一个指向不属于进程地址空间的指针（也可以说是野指针，通常是编程错误造成的），它所指向的内存位置是无效线性地址，同样操作系统内核也会直接产生一个 SIGSEGV 信号，终止进程。
 
 ## 字符串操作
 
@@ -2503,7 +2503,7 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 ## C++11特性
 
-- C++11引入了继承构造函数（inheriting constructors）特性，它允许派生类基于using关键字自动继承基类的构造函数。
+- C++11引入了继承构造函数（inheriting constructors）特性，它允许派生类基于using关键字自动继承基类的构造函数。(**注意：如果C++显式的定义某个签名下的构造函数，会阻止基于using隐式生成对应的继承构造函数**)
 
   ~~~cpp
   class Derived : public Base
@@ -2515,7 +2515,10 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
       // C++11
       using Base::Base;  // 继承基类的所有构造函数
   }
+  // 通过using A::A的声明。将基类中的构造函数全继承到派生类中，更巧妙的是，这是隐式声明继承的。即假设一个继承构造函数不被相关的代码使用，编译器不会为之产生真正的函数代码，这样比透传基类各种构造函数更加节省目标代码空间。
   ~~~
+
+- `std::begin()` 在 C++11 中引入，它是用于泛型编程的重要工具，使得代码能够更加通用，并且能够方便地处理不同类型的容器和数组。
 
 ## C++14特性
 
@@ -2682,7 +2685,81 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 # 模板元编程
 
-- 不是所有的模板结构体都有 `value` 静态成员变量。`value` 静态成员变量通常在模板元编程（Template Metaprogramming）中使用，用于表示某个模板结构体或类模板是否满足某种条件。
+- **C++的模板元编程是使用模板实例化驱动的编译期编程的方式**，这样可以提升代码灵活性及运行期的性能。
+
+- C++模板元编程的优势：
+
+  > - C++的模板参数分为**类型参数template \<class T\>与非类型参数template \<size_t N\>**，其中后者可以用来执行编译期的复杂公式计算（比如gcd递归、斐波拉契数列等），相比于提前自己运算好后直接填值提高可读性，同时保证了计算的正确性以及根据不同的模板参数的灵活性。
+  > - **浮点数、类对象以及字符串**是不允许作为非类型模板参数的。非类型的模板参数在编译期就能确认结果。
+  >
+  > - C++的模板元编程核心时提供一种泛型归类的能力，基于类型萃取、模板、SFINAE等技术灵活为一组特定类型提供代码复用。
+
+- 类模板有全特化和偏特化，但是函数模板只有全特化，不需要偏特化，因为函数有重载，函数模板的偏特化实际上是对于函数模板的重载。可以直接在签名指定类型而不用在模板参数列表\<\>中指定。
+
+- 在模板声明时，参数列表的签名都为typename, 因此相同数量参数的模板声明会被提示重定义。
+
+- SFINAE技术实际上是一种编译保护，有点像运行时的try异常捕捉，不同的模板就是不同的try，基于这种保护机制提供信息。
+
+- `,`逗号表达式会依次计算其左侧和右侧的表达式，然后返回右侧表达式的结果。基于类型萃取中的表达式有效性检查，可以完成SFINAE。
+
+  ~~~cpp
+  template<typename T>
+  auto process(const T&) -> decltype(std::declval<T>().size(), void()) {
+      std::cout << "T has a size() method\n";
+  }
+  // 这里，decltype 的参数会检查 T 类型是否有 size() 方法。如果没有，编译器会忽略这个模板实例化，而不会报错。
+  ~~~
+
+- 对于模板元编程中代码的匹配，在编译开始时，编译期会执行SFINAE检查，然后从检查通过的模板中匹配一个匹配度最高/最具体的模板；如果没有检查成功的，或者没有能匹配的，就会回退匹配到一个较为通用的模板；如果最终没有能够匹配的，就会报错。
+
+  > 可以被编译期识别为SFINAE条件的有：
+  >
+  > **函数返回类型的 SFINAE**:
+  >
+  > - 使用 `std::enable_if` 和 `std::void_t` 可以控制模板的启用与否。条件通常会放在返回类型部分或额外的模板参数中。
+  >
+  >   ~~~cpp
+  >   template<typename T>
+  >   std::enable_if_t<std::is_integral_v<T>, void>
+  >   process(const T&) {
+  >       std::cout << "T is an integral type\n";
+  >   }
+  >   ~~~
+  >
+  > **模板参数的 SFINAE**:
+  >
+  > - 通过添加一个默认模板参数，并将 `std::enable_if` 放置在该参数上，可以控制模板的选择。
+  >
+  >   ~~~cpp
+  >   template<typename T, typename = std::enable_if_t<std::is_class_v<T>>>
+  >   void process(const T&) {
+  >       std::cout << "T is a class type\n";
+  >   }
+  >   ~~~
+  >
+  > **表达式的有效性检查**(一般可以使用逗号表达式):
+  >
+  > - SFINAE 也可以用来检测某些表达式的有效性，如是否存在某个成员函数、成员变量等。
+  >
+  >   ~~~cpp
+  >   template<typename T>
+  >   auto process(const T&) -> decltype(std::declval<T>().size(), void()) {
+  >       std::cout << "T has a size() method\n";
+  >   }
+  >   ~~~
+
+- **模板元编程是对满足某些条件的类型进行代码复用的技术，对于其他不满足条件的类型，如果希望编译直接报错，可以在SFINAE的通用匹配中放置一个固定的错误assert，或者直接对于通用模板声明，但是不给定义。**
+
+  ~~~cpp
+  // 通用模板仅声明
+  template <system ss>
+  systemstatus xxxx();
+  
+  // 特化模板声明+定义
+  systemstaus xxx<xxx>() {};
+  ~~~
+
+- 不是所有的模板结构体都有 `value` 静态成员变量。`value` 静态成员变量通常在模板元编程（Template Metaprogramming）中使用，用于表示某个模板结构体或类模板是否满足某种条件。**value为成员常量表达式对象，有些类型萃取结构体模板比如decltype则有type这个类型对象**
 
   >标准库中定义了value静态成员的模板结构体有：
   >
@@ -2695,6 +2772,41 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
   >std::is_same<decltype(&T::insert), void(T::*)(const T&)  // T是否有insert成员方法（T::\*表示T的成员函数指针），且参数签名为const T&, 返回签名为void.
   >
   >std::is_enum_v<Enum_type> //Enum_type必须是枚举类型
+  >
+  >template <class T, class... Args> struct is_constructible;  // T是待检查类型，Args是可变参数，这个模板结构体是检查T是否可以被Args构造。
+  >
+  >std::is_invocable_ v // 这是C++17引入的特性，检查某个方法是否可调用
+  >
+  >
+  >
+  >// 基于SFINAE技术检查类型是否具有某方法
+  >
+  >~~~cpp
+  >template<typename T, typename = void>
+  >struct Printer {
+  >    static void print() {
+  >        std::cout << "Default printer\n";
+  >    }
+  >};
+  >
+  >// 针对具有 `size` 成员函数的特化
+  >template<typename T>
+  >struct Printer<T, std::void_t<decltype(std::declval<T>().size())>> {
+  >    static void print() {
+  >        std::cout << "Type has size() method\n";
+  >    }
+  >};
+  >// 根据decltype是否能编译成功，驱动模板实例化的选择，从而派发生成不同的代码。
+  >// 基于std::is_same_v比基于SFINAE技术的检查更加严格，前者除了要求编译成功外，还对函数签名等提出了要求
+  >~~~
+  >
+  >
+
+- 在C++14标准中，可以灵活使用”，“逗号表达时，SFINAE，和std中已经定义的一些模板结构体进行meta program，注意static_assert和if constexpr() 需要得到值（value）， 常用需求如下
+
+  > // 1 模板T是否具有.invoke方法
+  >
+  > 如果要同时指定方法的签名和返回值：std::is_same_v\<decltype(&T::insert), void(T::*)(const T&)\>  
 
 - ~~~cpp
   decltype 是 C++11 中引入的关键字，用于推断表达式的类型。它的语法如下：
@@ -2704,6 +2816,18 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
   ~~~
 
   比如上面的例子，decltype(&T::insert)会推断表达式的返回类型，自身表达式类型（T::*表示该表达式为T的成员函数指针），函数参数签名。
+
+- 要注意区分函数模板和类型模板
+
+  >- SFINAE：一般要使用类型模板特化执行SFINAE检查
+  >
+  >- 特化模板函数时，你需要指定确切的类型参数。此外，函数模板特化的语法是不同的，它不能像类模板特化那样工作。
+  >
+  >- 在 C++ 中，`::value` 是一个常量表达式，通常与类型特征（type traits）一起使用。`::value` 是许多标准库类型特征（如 `std::true_type` 和 `std::false_type`）的一部分，它表示该类型的某个特定值。
+  >
+  >- `::value` 是一个静态成员常量，表示一个编译时常量。这使得你可以在 `static_assert` 中进行编译时检查。
+  >
+  >  **与模板和类型特征结合**：通常与类型特征类（如 `std::true_type`、`std::false_type`、`std::integral_constant`）结合使用，用于在编译时评估条件。
 
 - `std::declval` 是一个 C++ 标准库函数模板，用于产生一个特定类型的临时值。它的语法如下：
 
@@ -2715,6 +2839,19 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
   `std::declval` 通常用于模板元编程中，特别是在需要推断表达式的类型但又不需要实际执行表达式的情况下。它提供了一种安全的方式来获取任意类型的右值引用。在很多情况下，它用于定义 SFINAE（Substitution Failure Is Not An Error）友好的模板函数或者类模板。
 
   举个例子，假设您有一个模板函数，需要对某个类型 `T` 的对象调用一个成员函数 `foo()`，但您不知道 `T` 是否真的有这个成员函数。您可以使用 `std::declval` 来获取一个临时值，然后调用这个成员函数，这样可以使得编译器能够进行类型推断，而不会因为尝试调用不存在的成员函数而导致编译错误。
+
+- **`std::declval<U>()`**: 用于生成类型 `U` 的值对象。
+
+  **`std::declval<U&>()`**: 用于生成类型 `U` 的引用对象。
+
+- ~~~cpp
+  decltype(std::begin(std::declval<U&>()), std::true_type{})
+  中，”，“运算符返回后一个表达式的值
+  ~~~
+
+- value_type: 每个STL中的类都有value_type这种东西，通俗的说value_type 就是stl容器盛装的数据的数据类型
+
+- `mapped_type` 是在 C++ 的关联容器（例如 `std::map` 和 `std::unordered_map`）中使用的一个类型定义。它表示容器中存储的“值”的类型。key_type是存储的键类型。
 
 - `std::true_type{}` 是 C++ 标准库中的一个类模板，用于表示==编译期常量 `true`== 的类型。它是一个空结构体，用于在编译时进行类型推断和模板特化。
 
