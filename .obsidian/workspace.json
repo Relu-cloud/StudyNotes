@@ -1,0 +1,169 @@
+{
+  "main": {
+    "id": "ef28a2af5ba78d7c",
+    "type": "split",
+    "children": [
+      {
+        "id": "64d4e5453b215837",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0c3a0198b2ac32cb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "工具生产力指南.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f4cbce832b54f4e6",
+    "type": "split",
+    "children": [
+      {
+        "id": "6406b044bbb81730",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "014b6e711e0e65a7",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "5d43d5684f83dabd",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "5c3bf150256b0eb9",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "02fcb7e50bf25ef2",
+    "type": "split",
+    "children": [
+      {
+        "id": "f4bfed3cf6ed5756",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fc3592ccb962424f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "工具生产力指南.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "71ad39c9cc2b30a3",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "工具生产力指南.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "f21a2eeb84e5460c",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "1725b9df6687d864",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "工具生产力指南.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "markdown-importer:Open format converter": false
+    }
+  },
+  "active": "0c3a0198b2ac32cb",
+  "lastOpenFiles": [
+    "编译相关.md",
+    "未来方向/学习目标.md",
+    "C++相关.md",
+    "2024-10-21.md",
+    "C++相关1.2.md",
+    "C++设计模式.md",
+    "CMake相关.md",
+    "一些很规范的描述角度.md",
+    "完成任务与收获.md",
+    "通用算法笔记.md",
+    "算法相关.md",
+    "工具生产力指南.md",
+    "未来方向",
+    "Git相关.md",
+    "Linux命令相关.md",
+    "Untitled.canvas"
+  ]
+}
