@@ -1,3 +1,19 @@
+# 创建型模式
+
+- 创建对象的机制， 能够提升已有代码的灵活性和可复用性。
+- 工厂方法、抽象工厂、生成器、原型、单例
+- 
+
+# 结构型模式
+
+- 对象和类组装成较大的结构， 并同时保持结构的灵活和高效。
+- 适配器、桥接、组合、装饰、外观、享元、代理
+
+# 行为模式
+
+- 对象间的高效沟通和职责委派
+- 责任链、命令、迭代器、中介者、备忘录、观察者、状态、策略、模板方法、访问者
+
 # 观察者模式
 
 它的优点就是观察者和被观察者之间是抽象耦合的，你可以看一下上述的LiSi和HanFeiZi类，而且也符合单一职责原则，每个类的职责都单一，通过Observer和Observable将单一职责的类串联起来，形成完美的触发机制。
@@ -27,7 +43,7 @@ Observer：观察者，为那些在目标发生改变时需获得通知的对象
 
 ConcreteSubject：具体目标，存储对象状态，状态改变时，向各个观察者发出通知
 
-ConcreteSubject：具体观察者，维护一个指向ConcreteSubject对象的引用，存储有关状态，实现更新接口update，使自身状态与目标的状态保持一致
+ConcreteSubject：具体观察者，维护一个指向ConcreteSubject对象的**引用**，存储有关状态，实现更新接口update，使自身状态与目标的状态保持一致
 
 # 抽象工厂模式
 
@@ -239,3 +255,8 @@ hole.fits(large_sqpeg_adapter) // false
 ~~~
 
 - [桥接](https://refactoringguru.cn/design-patterns/bridge)、 [状态模式](https://refactoringguru.cn/design-patterns/state)和[策略模式](https://refactoringguru.cn/design-patterns/strategy) （在某种程度上包括[适配器](https://refactoringguru.cn/design-patterns/adapter)） 模式的接口非常相似。 实际上， 它们都基于[组合模式](https://refactoringguru.cn/design-patterns/composite)——即将工作委派给其他对象， 不过也各自解决了不同的。 模式并不只是以特定方式组织代码的配方， 你还可以使用它们来和其他开发者讨论模式所解决的问题。
+
+#　多线程模式，生产者－消费者
+
+- 生产者-消费者模式是一个经典的多线程设计模式，它为多线程间的协作提供了良好的解决方案。也经常有面试官会让手写一个生产者消费者，从代码细节可以看出你对多线程编程的熟练程度
+

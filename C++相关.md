@@ -18,11 +18,11 @@
   >
   >   程序结束后由系统释放。
   >
-  > - 文字常量区 —常量字符串就是放在这里的。常量区是全局区中划分的一个小区域，里面存放的是常量，如**const修饰的全局变量**、字符串常量等
+  >   文字常量区 —常量字符串就是放在这里的。常量区是全局区中划分的一个小区域，里面存放的是常量，如**const修饰的全局变量**、字符串常量等
   >
   > - 程序代码区—存放函数体的二进制代码。
   >
-  > - 按进程来讲，他的内存区里是都有各自的代码段、数据段、栈区和堆区的吧，即便是两个不同的进程链接了同一个so库，那也是两份代码在两个进程的代码段里吧，包括so库里的全局数据，也应该是在两个进程各自的全局数据区里，互不影响的。不同模块/库之间数据不共享，开放访问但不开放直接写（copy on write的思想，要写就自己拷贝一份去写）。
+  > - 按进程来讲，他的内存区里是都有各自的**代码段、数据段（其实就是全局区、文字常量、字符串常量（只读数据段），随dll卸载时，操作系统回收）、栈区和堆区**的吧，即便是两个不同的进程链接了同一个so库，那也是两份代码在两个进程的代码段里吧，包括so库里的全局数据，也应该是在两个进程各自的全局数据区里，互不影响的。不同模块/库之间数据不共享，开放访问但不开放直接写（copy on write的思想，要写就自己拷贝一份去写）。
 
 - 1Mb等于1024*1024 = 1048576字节。即2^20。在16进制中，需要进5位。
 
@@ -1812,11 +1812,7 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
   父类的静态方法，通过子类的作用域也能访问，但是不能重写或重载；可以写一个同名函数来对父类的静态方法隐藏。（主要表现在rx系统子类没有派生就会生成父类的rxclass描述）
 
 
-- 顺序表的一般操作函数：
-
-  clear（清除表）、traverse（正序输出）、search（搜索表）、insert（插入）、remove（删除）、inverse（倒序输出）、resize（修改）、visit（查看）。
-
-  traverse函数横渡，正序遍历表里面所有的元素，该函数是一个vector、tree、table等都比较多的函数，可以添加一个回调，和起始点，让起始点元素开始遍历，每次遍历执行回调操作，可以命名为traverse遍历操作函数，
+- 
 
 - 在C++ Primer当中提到的64位的int只有long long,但是在实际各种各样的C++编译器当中,64位的int一直有两种标准.一种是long long,还有一种是\_\_int64,非主流的VC甚至还支持_int64
 
@@ -2464,7 +2460,7 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
      
 - 在C++中，指针的比较操作可以用于确定两个指针是否**指向**相同的位置、一个指针是否指向的位置在另一个指针之前或之后等。
 
-- 在C++的类中如果直接声明了一个结构体，但是并没有给类型名，意味着这是一个匿名的对象（非类型而是对象），里面的成员直接提升为类成员
+- 在C++的类中如果直接声明了一个结构体，但是并没有给类型名，意味着这是一个匿名的对象（非类型而是对象），里面的成员直接提升为类成员，==即使使用匿名对象（如匿名联合或匿名结构体），其内部类型的语义仍然有效，他依然是一个结构体/联合体==。
 
      ~~~cpp
      // 非匿名，有类型名U
@@ -2711,6 +2707,7 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 -  std*::*is_permutation, 检查一个序列是不是另一个序列的排列.
 - std::all_of, std::none_of和std::any_of
 - std::pow做指数运算，注意C++不支持**，同时^在C++中表示异或
+- 合并unordered_set，unorder_set有一个insert重载为insert(_Iter _First, _Iter _Last)，传入一个迭代器范围，基于此可以合并unorder_set.
 
 # Type_Traits
 
@@ -2745,11 +2742,48 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
      // setSingleShot用于设置是否单次触发
      ~~~
 
+- 【QT多线程，QThread】QThread是服务于多线程的类，QThread::currentThreadId()拿到当前线程id。
+
+- 【QT多线程】使用move to thread(threadId)可以将对象移动到某个线程里
+
+- 【QT框架】QT采用Model/View架构，分为模型、视图和委托，目的是将数据的存储和显示分离。模型Model与内存上的原始数据交流，视图从View中取数据，委托Delegate定制特殊的显示效果。常用的View控件是QTableView，QTreeView（显示关联层次数据（**树状扩展式，比如不同类型的类型属性**））；常用的Model类型为QStandardItemModel。(model专门管理数据，每个数据包括像QTreeView的表头这些也都由model管理)
+
+- 【基础对象】
+
+  - qDebug()是QT调bug的工具
+
+  - 通过new` `QThread()可以new一个新线程，调用start方法启动
+
+  - QObject::connect(定时器boss1, SIGNAL(timeout()), &w1, SLOT(run()));通过connectxi信号槽可以将定时器和worker连接
+
+  - connect函数
+
+    - static QMetaObject::Connection connect(const QObject *sender, const char *signal, const QObject *receiver, const char *member, Qt::ConnectionType = Qt::AutoConnection);
+
+    - 函数参数详解：第一个参数sender为发送对象；第二个参数为发送对象里面的一个信号；第三个参数为接收对象；第四个参数为接收对象里面的槽函数。一般我们使用发送者触发信号，然后执行接收者的槽函数。
+
+    - e.g. connect(client, SIGNAL(subscribed(const QString&)), this, SLOT(onMQTT_subscribed(const QString&))) 信号参数用SIGNAL包含，槽函数用SLOT包含，然后再头文件中添加槽函数
+
+      ~~~cpp
+      private slots:
+      	void onMQTT_subscribed(const QString &topic);
+      ~~~
+
+    
+    - QTreeView是QT中的树空间，最简单的显示效果如图，[img](.C++相关/image-20241121101045988.png)，首先基于视图构建一个model，`QStandardItemModel* model = new QStandardItemModel(ui->treeView);`一级节点直接使用 appendRow 方法添加到model上，次级节点则是添加到第一个父级节点上，依次构成父子关系树。
+  
+  
+
 # C++多线程
+
+- 基础方法与工具
+  - std::thread::hardware_concurrency()——获取硬件支持并发数
 
 - C++使用std::thread提供多线程能力，为了保证线程安全，一般线程在进行执行时，需要申请互斥锁(std::mutex)
 
 - std::mutex，锁是一个对象，该对象提供了lock、unlock等接口实现对数据的锁定保护。为了更方便的管理锁的lock,unlock的时机，提供了std::lock_guard管理，构造时调用mutex.lock，析构时调用std::mutex.unlock.**std::mutex对象将lock和unlock之间的代码变为了全局唯一，一个线程调用到该代码后就拥有了该全局性。**
+
+- `notify_one()`与`notify_all()`常用来唤醒阻塞的线程。***`notify_one()：`***因为只唤醒等待队列中的第一个线程；不存在锁争用，所以能够立即获得锁。其余的线程不会被唤醒，需要等待再次调用`notify_one()`或者`notify_all()`。`**notify_all()**：`会唤醒所有等待队列中阻塞的线程，存在锁争用，只有一个线程能够获得锁。其余未获取锁的线程会继续尝试获得锁(类似于轮询)，而**不会再次阻塞**。
 
 - std::atomic<...> （atomic原子的），`std::atomic`是C++11标准库中提供的一个模板类，用于在多线程编程中进行原子操作。原子操作是指那些在执行过程中不会被中断的操作，它们在多线程环境下能够避免竞态条件。 `std::atomic`提供了一种高效且方便的方法来实现多线程中的原子操作，**避免了显式使用锁的复杂性和潜在的性能开销**。在需要对共享变量进行简单读写或基本算术操作时，`std::atomic`是一个非常有用的工具。
 
