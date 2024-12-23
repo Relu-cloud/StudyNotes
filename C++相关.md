@@ -2599,6 +2599,51 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 - 【指针，指针比大小】一般只有指向同一数组对象的元素的指针比较才有意义，可以被视为迭代器的偏移量比较；初次之外编译期并没有对对象在内存中的相对位置做出规定，属于未定义行为。**唯一空指针的比较有一定意义，空指针被认为小于任何非空指针。**
 
+- 【-1取反，取反，~】-1取反为0，取反操作会首先将后面值转成bool再取反
+
+- 【C++保留栈查看、局部栈空间查看】C++默认局部栈空间为1m，可以在编译时指定更大的大小，全局区则更大。
+
+    ~~~cpp
+    ULONG_PTR lowLimit, highLimit;
+    GetCurrentThreadStackLimits(&lowLimit, &highLimit);  // <windows.h> 
+    std::cout << "Stack size: " << (highLimit - lowLimit) / 1024 << " KB\n";
+    ~~~
+
+- 【数组与指针】C++中数组名只是可以像指针那样使用，但是编译期内部认识他是一个数组，**数组变量本身保存了数组的大小（即数组元素个数），并且编译器知道这一点。**
+
+## C++输入输出
+
+- 【cin/cout】解锁cin和cout带来一定的性能提升，ios::sync_with_stdio(false); cin.tie(0),cout.tie(0);
+
+- 【scanf】scanf() 函数返回的值为：正确按指定格式输入变量的个数；也即能正确接收到值的变量个数。
+
+  - scanf会跳过缓冲区中非目标输入，一直到指定类型全部输入完毕后才返回
+  - scanf首先会将所有输入放到缓冲区，每次换行会尝试匹配，匹配失败/成功/遇到EOF则会返回。
+  - scanf退出有以下情况：1 成功接受到所有输入；2 匹配失败（比如期望为%d, 传入了字符）；3 遇到文件终止符
+
+- 【scanf，EOF】 EOF，这是在stdio.h里面定义的常量（通常值为-1），表示输入流已经结束。
+
+- 【格式化输出】C++格式化输出使用cout标识符，提供了setw, setprecision等函数。
+
+- 【字符串分割】使用strtok(char *str, const char *delim)方法，返回值为第一个字符串
+
+  ~~~cpp
+     char str[80] = "This is - www.runoob.com - website";
+     const char s[2] = "-";
+     char *token;
+     
+     /* 获取第一个子字符串 */
+     token = strtok(str, s);
+     
+     /* 继续获取其他的子字符串 *//
+     while( token != NULL ) {
+        printf( "%s\n", token );
+        token = strtok(NULL, s);
+     }
+  ~~~
+
+  
+
 ## 文件与日志
 
 - 在32位机器中，%d, 和%ld都表示32位（int, long），而%lld表示64位整型占位符。但是在64位机器中%ld表示的long就是64位的

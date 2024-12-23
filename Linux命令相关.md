@@ -65,3 +65,5 @@
       > -i：忽略大小写
       >
       > *：表示当前目录所有文件，也可以是某个文件名
+
+- netstat -ntp, 网络状态，-n不显示localhost只显示ip，-t表示tcp, -p表示进程号processId

@@ -403,6 +403,27 @@
 - 如果使用了TortoiseGit等工具，需要在工具上使用puTTYgen也生成一个ssh识别码，贴到需要接入的gitlab的仓库上，然后在工具上的Pagenant上Add该ssh识别文件。
 - **如果配置好公钥，并添加到gitlab自己账号下的profile中，长时间不用后发现无效化了又要输密码，这时候找出自己本机下c盘用户目录下的.ssh文件夹的.pub文件，用vscode打开，在添加到profile一次就好，报错已存在也无所谓，会重新识别到。**
 
+# 团队合作，pr和mr
+
+- pull request和merge request是一个东西
+- 前者是请求别人拉你的代码，后者是请求合并进主干
+
+# git子模块
+
+- submodule解决团队维护难题，每个团队负责的模块就是一个git仓库，所有仓库被包含在一个主仓库下。
+- 在Git仓库A中，通过`git submodule add ...(仓库B的地址，即git clone时后面那串东西)`，可以把仓库B当作仓库A的submodule，此时A就成了主项目。【注：B也可以做A的主项目，通过在仓库B执行`git submodule add ...(A地址)`即可，因为二者都是完整Git仓库，在建立父子关系前，没有差异的。】执行操作后，会在当前父项目下新建个文件夹，名字就是 submodule 仓库的名字。这个文件夹里面的内容，**是 submodule 对应 Git 仓库的完整代码。**
+- 注意父子关系仅被父项目识别，子项目本身并不知道自身是否是子项目，在父项目的`.gitmodules` 文件中，主项目还保存了对应 submodule 的版本号（commit id），**没有冗余存储 submodule 的代码**。当你在文件夹B中做commit后，文件夹B里面就有了新的 commit id。此时主项目A中所记录的 submodule 的commit id也会更新。所以，你`cd ..`回到文件夹A后，会发现A有变更了，变更内容是：旧commid id变成了新的commit id。
+- 如何在主项目仓库，拉取 submodule 的更新
+  - cd submodule 后 `git pull`
+  - 主项目执行`git submodule update --remote [submodule文件夹相对路径]`
+  - 主项目执行 `git submodule update [submodule文件夹相对路径]`
+
+- clone 包含 submodule 的仓库
+  - 先`git clone 主项目仓库`并进入主项目文件夹，这时候submodule的文件夹都是空的。
+  - 执行`git submodule init [submodule的文件夹的相对路径]`。
+  - 执行`git submodule update [submodule的文件夹的相对路径]`。
+  - 二三步可以合并，git submodule update --init [submodule的文件夹的相对路径]。
+
 # gitlab
 
 - gitlab仓库只有owner可以为其他人创建账号，如果没有账号，但是希望拉取代码，可以由gitlab的成员制作一个token标记，外部接口可以通过该标记拿到仓库中该成员权限的代码，属于成员权限的自由行为
