@@ -1818,7 +1818,7 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 
 - `long long`最早是C99标准引进的，然而VC6.0推出于1998年，在C99标准之前。所以当时微软就自己搞出来一个变量叫做`__int64`来表示64位整数。win平台下的一些其他IDE如`dev C++ `，`CodeBlocks`等也支持long `long`，因为它们为了和微软的系统兼容，所以也支持`__int64`。所以一个比较简单的区分方法是，判断编译器运行的操作系统是否是windows，如果是`windows`使用`__int64`，否则使用`long long`
 
-- atoi函数和std::stoi函数都可以将数字字符转化为int输出，其不同点在于以下几点：
+- 【字符串转整数，string转int】atoi函数和std::stoi函数都可以将数字字符转化为int输出，其不同点在于以下几点：
 
   出处不同
 
@@ -2618,10 +2618,37 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 - 【scanf】scanf() 函数返回的值为：正确按指定格式输入变量的个数；也即能正确接收到值的变量个数。
 
   - scanf会跳过缓冲区中非目标输入，一直到指定类型全部输入完毕后才返回
+
   - scanf首先会将所有输入放到缓冲区，每次换行会尝试匹配，匹配失败/成功/遇到EOF则会返回。
+
   - scanf退出有以下情况：1 成功接受到所有输入；2 匹配失败（比如期望为%d, 传入了字符）；3 遇到文件终止符
 
-- 【scanf，EOF】 EOF，这是在stdio.h里面定义的常量（通常值为-1），表示输入流已经结束。
+  - ~~~cpp
+    int a;
+    while(scanf("%d",&a)!=EOF)
+    {
+        printf("%d\n",a);
+    }
+    //使用istream对象作为循环的判断条件，检测流的状态。如果流是有效的，即流未遇到错误，那么检测成功。当遇到文件结束符（EOF）或者遇到一个无效输入时istream对象的状态就会变为无效。
+    for(int i;cin>>i;)
+    {
+        cout << i << endl;
+    }
+    int a;
+    while(cin>>a)
+    {
+        cout << a << endl;
+    }
+    
+    1.while(scanf("%d%d",&m,&n)!=EOF) 
+    2.while(scanf("%d%d",&m,&n)==2) // 限定输入个数比较好
+    3.while(cin>>m>>n) 
+    4.while(~scanf("%d%d",&m,&n))  // 取反，反码，-1的反码为0，其他的反码都为非0
+    ~~~
+    
+  - 注意如果要输入double，用%lf。
+
+- 【scanf，EOF】 EOF，这是在stdio.h里面定义的常量（通常值为-1），表示输入流已经结束。**在windows下输入EOF需要输入CTRL+Z**【在VS中需要三次带确认的Ctrl+Z】，**Linux/Unix/Mac操作系统：在这类操作系统下，要输入EOF需要输入CTRL+D**
 
 - 【格式化输出】C++格式化输出使用cout标识符，提供了setw, setprecision等函数。
 
@@ -2748,11 +2775,12 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 - `std::count_if` 是 C++ 标准模板库（STL）中的一个算法函数，用于统计符合特定条件的元素数量。
 - std::advance(it, 5)将迭代器前进指定的步长。
 - std*::*mismatch, 返回两个范围中第一个不同的位置 ;
--  std*::*equal, 测试两个范围内的元素是否相等 ;
--  std*::*is_permutation, 检查一个序列是不是另一个序列的排列.
+- std*::*equal, 测试两个范围内的元素是否相等 ;
+- std*::*is_permutation, 检查一个序列是不是另一个序列的排列.
 - std::all_of, std::none_of和std::any_of
 - std::pow做指数运算，注意C++不支持**，同时^在C++中表示异或
 - 合并unordered_set，unorder_set有一个insert重载为insert(_Iter _First, _Iter _Last)，传入一个迭代器范围，基于此可以合并unorder_set.
+- std::accumulate定义在#include\<numeric\>中，作用有两个，一个是累加求和，另一个是自定义类型数据的处理。accumulate带有三个形参：头两个形参指定要累加的元素范围，**第三个形参则是累加的初值**,**可以使用第四个参数自定义累加行为**。
 
 # Type_Traits
 
@@ -3405,3 +3433,7 @@ int * const pTwo;  //指向整形的**常量指针** ，它不能在指向别的
 3. main函数执行
 
 **comment：**定义在cpp文件的全局静态变量的初始化时机是在程序启动时，并且是在main函数执行之前。具体初始化的顺序取决于它们在文件中的顺序和是否跨翻译单元。跨翻译单元的初始化顺序是不确定的，应该避免依赖。
+
+# C++常见问题
+
+- 

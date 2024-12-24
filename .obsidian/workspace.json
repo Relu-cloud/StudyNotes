@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "C++相关.md",
+                "file": "一些很规范的描述角度.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "C++相关"
+              "title": "一些很规范的描述角度"
             }
           }
         ]
@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "非叶子",
+                "query": "设计原则",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -163,8 +163,9 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "5d43d5684f83dabd",
+  "active": "0c3a0198b2ac32cb",
   "lastOpenFiles": [
+    "C++相关.md",
     "项目设计经验.md",
     "笔记1.0版本/C++相关_1.0.md",
     "生活经验/C++设计模式.md",
@@ -179,7 +180,6 @@
     "算法相关.md",
     "工具生产力指南.md",
     "编译相关.md",
-    "C++相关.md",
     "2024-10-21.md",
     "C++相关1.2.md",
     "CMake相关.md",
